@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify, BadRequest
+from flask import Flask, request, jsonify
 from mysql.connector import connect, Error
+from werkzeug.exceptions import BadRequest
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required
@@ -55,12 +56,15 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
+    if not username or not password:
+        return jsonify({"error": "Username and password required"}), 400
+    
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
     user = cursor.fetchone()
     cursor.close()
-    connection.close()
+    connection.close()    
 
     if user and check_password_hash(user["password"], password):
         access_token = create_access_token(
