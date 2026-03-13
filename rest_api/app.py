@@ -23,7 +23,7 @@ DB_CONFIG = {
     "host": "localhost",
     "user": "root",
     "password": "",
-    "database": "forum_db"
+    "database": "rest_api_db"
 }
 
 def get_db_connection():
@@ -161,7 +161,7 @@ def put_user(id):
 
     cursor.execute("SELECT id FROM users WHERE id = %s", (id,))
     if not cursor.fetchone():
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "Användare hittades inte"}), 404
 
     hashed_password = generate_password_hash(password)
     cursor.execute(
